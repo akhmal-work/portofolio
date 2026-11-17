@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Akhmal Aditya Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one "stage" above a rotating camera-dial arc; every choice = one tap. Deep forest green + brass. Single dark look (deliberate). */
+:root{
+  --bg:#0e3a2f; --bg-deep:#0a2c24; --fg:#eef4f0; --muted:#9fbcb1; --line:rgba(238,244,240,.16);
+  --accent:#d9b870; --accent-ink:#1d1708; --rec:#ff5a4f;
+  --f-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1180px;margin:0 auto}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+header .inner{display:flex;align-items:center;justify-content:space-between;padding-block:22px;gap:16px}
+.brand{font-family:var(--f-display);font-weight:700;letter-spacing:.18em;font-size:13px;text-transform:uppercase}
+.brand span{color:var(--muted);font-weight:500}
+.navlinks{display:flex;gap:22px}
+.navlinks a{text-decoration:none;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.navlinks a:hover{color:var(--fg)}
+
+.hero{position:relative;overflow:hidden}
+.top{display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px;padding-top:36px}
+.intro h1{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,3.4vw,42px);line-height:1.04;margin:0 auto 12px;text-wrap:balance;max-width:16ch}
+.intro h1 em{font-style:normal;color:var(--accent)}
+.intro p{margin:0 auto;color:var(--muted);max-width:40ch}
+.filters{text-align:center}
+.chips{display:flex;gap:10px;margin-top:10px;justify-content:center;flex-wrap:wrap}
+.chip{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--muted);transition:.2s}
+.chip[aria-pressed="true"]{border-color:var(--fg);color:var(--fg)}
+.chip:hover{color:var(--fg)}
+
+.dial-zone{position:relative;height:clamp(540px,60vw,680px)}
+.dial{position:absolute;left:50%;top:90px;width:var(--d);height:var(--d);margin-left:calc(var(--d)/-2);--d:min(880px,150vw);--r:calc(var(--d)/2)}
+.ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line)}
+.ring.r2{inset:46px;border-color:rgba(238,244,240,.09)}
+.marker{position:absolute;left:50%;top:-5px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--accent);z-index:3;box-shadow:0 0 0 6px var(--bg)}
+.arc{position:absolute;inset:0;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.arc-item{position:absolute;left:50%;top:50%;width:0;height:0}
+.arc-item button{position:absolute;left:0;top:0;transform:translate(-50%,calc(-1*var(--r) - 34px));white-space:nowrap;font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 8px;transition:color .3s,opacity .3s}
+.arc-item.on button{color:var(--fg);font-weight:700}
+.arc-item.dim button{opacity:.3}
+.arc-item.gone{pointer-events:none}
+.arc-item.gone button{opacity:0}
+.arrows{position:absolute;top:60px;left:50%;transform:translateX(-50%);width:min(980px,100%);display:flex;justify-content:space-between;pointer-events:none;z-index:4}
+.arrow{pointer-events:auto;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.2s}
+.arrow:hover{border-color:var(--fg)}
+
+.stage{position:absolute;left:50%;top:190px;transform:translateX(-50%);display:flex;gap:40px;align-items:flex-start;z-index:2}
+.reel{width:clamp(200px,22vw,250px);aspect-ratio:9/16;max-width:100%;border-radius:22px;position:relative;overflow:hidden;background:var(--bg-deep);border:1px solid var(--line);box-shadow:0 40px 80px rgba(0,0,0,.45);flex-shrink:0}
+.reel video{width:100%;height:100%;object-fit:cover;display:block}
+.reel.land{width:clamp(280px,29vw,400px);aspect-ratio:16/9}
+.snd{position:absolute;right:12px;top:12px;font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;z-index:2}
+.stage.land .case{width:min(260px,24vw)}
+.reel .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:14px;background:radial-gradient(120% 70% at 50% 110%,var(--tint,#d9b87033),transparent 70%)}
+.reel .ph-top{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.rec{color:var(--fg)}
+.rec::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rec);margin-right:6px;vertical-align:1px;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.ph-mid{text-align:center;font-family:var(--f-display);font-size:13px;color:var(--muted);line-height:1.4}
+.ph-mid b{display:block;color:var(--fg);font-size:17px;margin-bottom:4px}
+.ph-bot{font-family:var(--f-mono);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.ig-link{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.4);text-decoration:none;white-space:nowrap}
+
+.case{width:min(300px,30vw);padding-top:8px}
+.case .label{display:block;margin-bottom:8px}
+.case h2{font-family:var(--f-display);font-size:26px;line-height:1.1;margin:0 0 10px;font-weight:600;text-wrap:balance}
+.case p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.roles{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.roles span{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--fg)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.stats b{display:block;font-family:var(--f-display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.stats small{font-size:11px;color:var(--muted)}
+.todo{color:var(--accent)!important}
+.case-left{text-align:right}
+.case-left .roles{justify-content:flex-end}
+.mini{margin:0 0 16px;padding:0;list-style:none;display:grid;gap:4px;font-family:var(--f-display);font-size:15px}
+.mini li{border-bottom:1px solid var(--line);padding-bottom:4px;transition:color .3s}
+.mini li.cur{color:var(--accent)}
+.reel video.mv{position:absolute;inset:0;opacity:0;transition:opacity .45s}
+.reel video.mv.on{opacity:1}
+.showreel{display:flex;flex-direction:column;align-items:center}
+.collage{--ch:clamp(240px,28vw,400px);display:flex;gap:12px;height:var(--ch)}
+.tile{position:relative;overflow:hidden;border-radius:16px;background:var(--bg-deep);border:1px solid var(--line);box-shadow:0 30px 60px rgba(0,0,0,.35);flex-shrink:0}
+.tile.v{width:calc(var(--ch) * 9 / 16);height:100%}
+.hstack{display:flex;flex-direction:column;gap:12px;height:100%;width:calc((var(--ch) - 12px) / 2 * 16 / 9);flex-shrink:0}
+.tile.h{flex:1 1 0;min-height:0}
+.tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.tile video.on{opacity:1}
+.ttag{position:absolute;left:10px;bottom:10px;z-index:2;font-size:11px;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;max-width:calc(100% - 20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttag:empty{display:none}
+.live{color:var(--accent)}
+.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:1px;animation:blink 1.6s infinite}
+.cgap{height:32px}
+.open-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:13px}
+
+.counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;z-index:3}
+.counter b{color:var(--fg);font-weight:500}
+
+section.block .inner{padding-block:88px;border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:40px;flex-wrap:wrap}
+.sec-head h3{font-family:var(--f-display);font-size:clamp(26px,3vw,36px);font-weight:600;margin:0;line-height:1.1;text-wrap:balance;max-width:20ch}
+.sec-head p{margin:0;color:var(--muted);max-width:42ch}
+
+.clients{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.cgroup{min-width:0}
+.cgroup .label{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.cgroup ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.cgroup li{font-family:var(--f-display);font-size:17px;line-height:1.25}
+.cgroup li small{display:block;font-family:var(--f-body);font-size:12px;color:var(--muted);margin-top:1px}
+
+.services{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.svc{padding:4px 24px;border-left:1px solid var(--line);min-width:0;display:flex;flex-direction:column}
+.svc:first-child{padding-left:0;border-left:0}
+.svc .label{display:block;margin-bottom:12px}
+.svc h4{font-family:var(--f-display);font-size:21px;margin:0 0 10px;font-weight:600;text-wrap:balance}
+.svc p{margin:0 0 14px;color:var(--muted)}
+.svc ul{margin:0 0 20px;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
+.svc li::before{content:"— ";color:var(--muted)}
+.price{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.price small{display:block;font-size:12px;color:var(--muted)}
+.price b{font-family:var(--f-display);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.price em{display:block;font-style:normal;font-size:12px;margin-top:8px;color:var(--muted)}
+.price b span{font-size:13px;color:var(--muted);font-weight:500}
+.svc.addon h4{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:3px;font-family:var(--f-body);font-weight:500}
+.gear{margin-top:36px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:13px}
+.gear span{border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--fg);font-size:12px}
+.tier + .tier{margin-top:10px}
+.other{margin-top:28px;padding:22px 24px;border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.other h4{font-family:var(--f-display);font-size:20px;font-weight:600;margin:0 0 4px}
+.other p{margin:0;color:var(--muted)}
+.other .copy{padding:12px 20px;font-size:13px}
+
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.step{border-top:1px solid var(--fg);padding-top:14px;min-width:0}
+.step .label{color:var(--accent)}
+.step h5{font-family:var(--f-display);font-size:17px;margin:8px 0 6px;font-weight:600}
+.step p{margin:0;font-size:13px;color:var(--muted)}
+
+.contact .inner{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:end}
+.contact h3{font-family:var(--f-display);font-size:clamp(32px,4.6vw,58px);line-height:1.02;margin:0;font-weight:600;text-wrap:balance}
+.contact h3 em{font-style:normal;color:var(--accent)}
+.rows{display:grid;gap:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid var(--line);min-width:0}
+.row .label{display:block;margin-bottom:3px}
+.row .val{font-family:var(--f-display);font-size:18px;overflow-wrap:anywhere;user-select:all}
+.row-actions{display:flex;gap:8px;flex-shrink:0}
+.copy{font-size:12px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;text-decoration:none}
+.copy:hover{border-color:var(--fg)}
+.copy.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+footer .inner{padding-block:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+
+@media (max-width:1000px){
+  .clients{grid-template-columns:repeat(2,1fr)}
+  .services{grid-template-columns:repeat(2,1fr);row-gap:36px}
+  .svc:nth-child(3){padding-left:0;border-left:0}
+}
+@media (max-width:900px){
+  .navlinks{display:none}
+  .dial-zone{height:auto;padding-top:86px;padding-bottom:70px}
+  .collage{--ch:clamp(200px,60vw,300px)}
+  .dial{top:40px;--d:min(640px,160vw)}
+  .arrows{top:20px}
+  .stage{position:relative;left:auto;top:auto;transform:none;flex-direction:column;align-items:center;gap:24px;margin-top:64px}
+  .arc-item.dim button{opacity:0}
+  .reel.land{width:100%;max-width:420px}
+  .stage.land .case{width:100%}
+  .case,.case-left{width:100%;max-width:420px;text-align:left}
+  .case-left .roles{justify-content:flex-start}
+  .case-left{order:3}
+  .steps{grid-template-columns:repeat(2,1fr);row-gap:28px}
+  .contact .inner{grid-template-columns:1fr;gap:28px}
+}
+@media (max-width:600px){
+  .clients{grid-template-columns:1fr}
+  .services{grid-template-columns:1fr}
+  .svc,.svc:nth-child(3){padding:0 0 28px;border-left:0;border-bottom:1px solid var(--line)}
+  .svc:last-child{border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="wrap">
+  <div class="inner">
+    <div class="brand">Akhmal Aditya</div>
+    <nav class="navlinks" aria-label="Navigation">
+      <a href="#work">Work</a><a href="#clients">Clients</a><a href="#services">Services</a><a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap" id="work">
+  <div class="inner">
+    <div class="top">
+      <div class="intro">
+        <h1>Be seen.<br><em>Be remembered.</em></h1>
+        <p>Video for personal brands and events. From the first idea to the final post.</p>
+      </div>
+      <div class="filters">
+        <span class="label">Pick a category</span>
+        <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+      </div>
+    </div>
+
+    <div class="dial-zone" id="dialZone">
+      <div class="arrows">
+        <button class="arrow" id="prev" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="arrow" id="next" aria-label="Next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="dial" id="dial">
+        <div class="ring"></div><div class="ring r2"></div><div class="marker"></div>
+        <div class="arc" id="arc"></div>
+      </div>
+
+      <div class="stage" id="stage" aria-live="polite">
+        <div class="case case-left" id="caseLeft"></div>
+        <div class="reel" id="reel"></div>
+        <div class="case" id="caseRight"></div>
+        <div class="showreel" id="showreel" hidden><div class="collage" id="collage"></div></div>
+      </div>
+      <div class="counter" id="counter"></div>
+    </div>
+  </div>
+</section>
+
+<section class="block wrap" id="clients">
+  <div class="inner">
+    <div class="sec-head">
+      <h3>People and places I've worked with.</h3>
+      <p>Doctors, founders, clubs, coffee shops, and corporate events.</p>
+    </div>
+    <div class="clients" id="clientWall"></div>
+  </div>
+</section>
+
+<section class="block wrap" id="services">
+  <div class="inner">
+    <div class="sec-head">
+      <h3>Pick what you need.</h3>
+      <p>Organic content comes first. Once it has a rhythm, ads help it reach more people.</p>
+    </div>
+    <div class="services">
+      <div class="svc">
+        <span class="label">Monthly · 3, 6, or 12-month contract</span>
+        <h4>Personal brand content</h4>
+        <p>For professionals and founders who want to be known by their own face and voice.</p>
+        <ul><li>Personal branding guide: positioning, pillars, tone</li><li>Ideas, research &amp; a script for every piece</li><li>Shooting &amp; post-production, 2 revisions per piece</li><li>10 to 15 videos a month, depending on the package</li><li>Posting &amp; replying to comments and DMs as an add-on</li></ul>
+      </div>
+      <div class="svc">
+        <span class="label">Per video</span>
+        <h4>Event aftermovie &amp; recap</h4>
+        <p>Videos made to perform on Instagram, not just to sit in an archive.</p>
+        <ul><li>Recap, aftermovie, or teaser</li><li>One video up to 1 minute</li><li>Events up to 6 hours, longer on request</li><li>Delivered in 1–2 weeks</li><li>Drone as an add-on</li></ul>
+      </div>
+      <div class="svc">
+        <span class="label">Project or ongoing</span>
+        <h4>Brand &amp; F&amp;B content</h4>
+        <p>For shops, studios, cafés, and restaurants that want their place and product to look as good as they are.</p>
+        <ul><li>Menu &amp; product videos</li><li>Outlet and service highlights</li><li>Launch &amp; promo content</li></ul>
+      </div>
+      <div class="svc addon">
+        <span class="label">Extra</span>
+        <h4>Instagram Ads <span class="tag">Add-on</span></h4>
+        <p>When organic content works, the best posts can be boosted to reach new audiences.</p>
+        <ul><li>Pick the posts worth promoting</li><li>Campaign &amp; audience setup</li><li>Results report</li></ul>
+      </div>
+    </div>
+    <div class="gear">Shot on <span>Smartphone</span> <span>Full-frame camera</span> <span>Drone</span> · whichever fits the job and the budget.</div>
+    <div class="other">
+      <div><h4>Have a different job in mind?</h4><p>If it needs a camera and a good story, I'm open to it. Just ask.</p></div>
+      <a class="copy primary" href="https://wa.me/6285187611090" target="_blank" rel="noopener">Ask on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section class="block wrap" id="process">
+  <div class="inner">
+    <div class="sec-head">
+      <h3>How it works.</h3>
+      <p>You show up on camera. Everything else is handled.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="label">Step 1</span><h5>Talk</h5><p>Your goals, your audience, the way you speak.</p></div>
+      <div class="step"><span class="label">Step 2</span><h5>Plan</h5><p>Content ideas, short scripts, and a shoot schedule.</p></div>
+      <div class="step"><span class="label">Step 3</span><h5>Shoot</h5><p>One session for weeks of content.</p></div>
+      <div class="step"><span class="label">Step 4</span><h5>Edit</h5><p>Strong hooks, subtitles, licensed music.</p></div>
+      <div class="step"><span class="label">Step 5</span><h5>Post</h5><p>Captions written, posting time set.</p></div>
+      <div class="step"><span class="label">Step 6</span><h5>Review</h5><p>Read the numbers. Repeat what works.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block contact wrap" id="contact">
+  <div class="inner">
+    <h3>Got a brand or an event that needs to be <em>seen?</em></h3>
+    <div class="rows">
+      <div class="row"><div><span class="label">WhatsApp</span><span class="val" id="v-wa">+62 851 8761 1090</span></div>
+        <div class="row-actions"><a class="copy primary" href="https://wa.me/6285187611090" target="_blank" rel="noopener">Chat</a><button class="copy" data-copy="v-wa">Copy</button></div></div>
+      <div class="row"><div><span class="label">Email</span><span class="val" id="v-email">akhmaladitya.work@gmail.com</span></div>
+        <div class="row-actions"><button class="copy" data-copy="v-email">Copy</button></div></div>
+      <div class="row"><div><span class="label">Area</span><span class="val">Tangerang · Jakarta · Bandung</span></div></div>
+      <div class="row"><div><span class="label">Instagram</span><a class="val" href="https://instagram.com/4k.hmal" target="_blank" rel="noopener">@4k.hmal</a></div>
+        <div class="row-actions"><button class="copy" data-text="@4k.hmal">Copy</button></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap"><div class="inner"><span>© 2026 Akhmal Aditya</span><span>Tangerang · Jakarta · Bandung</span></div></footer>
+
+<script>
+/* ===== EDIT HERE =====
+   Each client: name, type, context, did, roles, stats, video (.mp4 path, vertical or horizontal), ig (link).
+   Anything inside [fill ...] shows in brass so it's easy to find. */
+const PB_ROLES=["Script","Shoot","Post-production"];
+const EV_ROLES=["Shot plan","Shoot","Post-production"];
+const BR_ROLES=["Script","Shoot","Post-production"];
+const pbStats=[["[fill]","top views"],["[fill]","new followers"],["[fill]","months"]];
+const evStatsTA=[["[fill]","views"],["[fill]","videos made"],["1–2 weeks","turnaround"]];
+const evStats=[["[fill]","recap views"],["[fill]","videos made"],["[fill]","turnaround"]];
+const brStats=[["[fill]","top views"],["[fill]","videos made"],["[fill]","months"]];
+
+const CATEGORIES=[
+  {key:"Personal Brand", tint:"#9fe0c833",
+   blurb:"Doctors, consultants, and founders who want to be known by their own face and voice. Four of the five are still running.",
+   items:[
+    {name:"dr. Ika Safira, Sp.PD", short:"dr. Ika Safira", type:"Internist (Sp.PD)", context:"An internist known for a holistic approach to care. The goal: a credible voice online, so patients understand and trust that approach before they ever meet her.", did:"Scripting, shooting, and post-production direction for 15 pieces of content a month, plus posting.", roles:["Script","Shoot","Post-production","Posting"], stats:[["8","months"],["15","content / month"],["[fill]","growth"]], video:"videos/dr-ika-safira.mp4", ongoing:true, orient:"landscape"},
+    {name:"Gema Satria", type:"Financial consultant", context:"In finance, people only take advice from someone they trust. The goal was to build that trust on social media and turn it into clients over time.", did:"Scripting, shooting, and post-production direction for 15 pieces of content a month.", roles:PB_ROLES, stats:[["3","months"],["15","content / month"],["[fill]","growth"]], video:"videos/gema-satria.mp4"},
+    {name:"Ardi Setiadharma", type:"Entrepreneur", context:"A founder who wanted to build a legacy under his own name, not only through his business.", did:"Scripting, shooting, and post-production direction for 15 pieces of content a month.", roles:PB_ROLES, stats:[["4","months"],["15","content / month"],["[fill]","growth"]], ongoing:true, video:"videos/ardi-setiadharma.mp4"},
+    {name:"Liana Lie", type:"Entrepreneur", context:"An entrepreneur building a personal brand next to her business, so people know and trust the person behind it.", did:"Scripting, shooting, and post-production direction for 15 pieces of content a month, plus posting.", roles:["Script","Shoot","Post-production","Posting"], stats:[["9","months"],["15","content / month"],["[fill]","growth"]], video:"videos/liana-lie.mp4", ongoing:true},
+    {name:"Giovani Tan", type:"Entrepreneur", context:"An entrepreneur who wanted a steady, recognisable presence on social media that builds her credibility and supports her business.", did:"Scripting, shooting, and post-production direction for 8 pieces of content a month, plus posting.", roles:["Script","Shoot","Post-production","Posting"], stats:[["5","months"],["8","content / month"],["[fill]","growth"]], ongoing:true, video:"videos/giovani-tan.mp4"}
+   ]},
+  {key:"Events", tint:"#b48cff33",
+   blurb:"Club nights, conferences, award shows, a sports summit, and a trading card game arena. Recaps and aftermovies made for Instagram.",
+   items:[
+    {name:"Zeek Jakarta", type:"Club", context:"", did:"Recap video of the night.", roles:EV_ROLES, stats:evStatsTA, video:"videos/zeek-jakarta.mp4", orient:"landscape"},
+    {name:"LTX", type:"Club", context:"", did:"Aftermovie of the night.", roles:EV_ROLES, stats:evStatsTA, video:"videos/ltx.mp4", orient:"landscape"},
+    {name:"Eunoia Jakarta", type:"Club · Halloween night", context:"", did:"Recap video of the Halloween night.", roles:EV_ROLES, stats:evStatsTA, video:"videos/eunoia-jakarta.mp4", orient:"landscape"},
+    {name:"Lucenne × Siangyoo", type:"Club collaboration", context:"", did:"Aftermovie of the night.", roles:EV_ROLES, stats:evStatsTA, video:"videos/lucenne-x-siangyoo.mp4", orient:"landscape"},
+    {name:"IHCBS 2026", type:"HR conference", context:"", did:"Recap video featuring one of the speakers.", roles:EV_ROLES, stats:evStatsTA, video:"videos/ihcbs-2026.mp4"},
+    {name:"Awardee", type:"Insurance awards night", context:"", did:"Recap video of the awards night.", roles:EV_ROLES, stats:evStatsTA, video:"videos/awardee.mp4"},
+    {name:"Indonesia Sport Summit", short:"Sport Summit", type:"Sports summit", context:"", did:"Recap video of the summit.", roles:EV_ROLES, stats:evStatsTA, video:"videos/indonesia-sport-summit.mp4"},
+    {name:"TCGverse.id Indonesia Arena", short:"TCGverse.id", type:"Trading card game event", context:"", did:"Shooting for the event.", roles:["Shoot"], stats:evStats, video:"videos/tcgverse.mp4"}
+   ]},
+  {key:"Brands & F&B", tint:"#ffd27a33",
+   blurb:"Studios, workshops, cafés, and restaurants that want their place and product to look as good as they are.",
+   items:[
+    {name:"GWYN Beauty Studio", short:"GWYN", type:"Beauty studio", context:"Make the brand better known and more credible, get its message across, and stay top of mind so more people become customers.", did:"Scripting, shooting, and post-production direction for 15 pieces of content a month, plus posting.", roles:["Script","Shoot","Post-production","Posting"], stats:[["9","months"],["15","content / month"],["[fill]","growth"]], video:"videos/gwyn.mp4", ongoing:true},
+    {name:"iTune Engineering", short:"iTune", type:"ECU car tuning", context:"An ECU tuning workshop that wanted to speak to car enthusiasts in their own language.", did:"Project-based scripting, shooting, and post-production direction over about four months.", roles:BR_ROLES, stats:[["4","months, per project"]], video:"videos/itune-engineering.mp4"},
+    {name:"Berawal Coffee", type:"Coffee shop", context:"A coffee shop built on togetherness. For a year, the daily content kept Berawal part of people\'s everyday lives, like a friend who was always there.", did:"Daily promotional content for the café, for one year.", roles:BR_ROLES, stats:[["1 year","duration"],["Daily","content"],["[fill]","views"]], video:"videos/berawal-coffee.mp4"},
+    {name:"House of Le Mans", type:"F&B", context:"A community-driven F&B spot in Gading Serpong, getting ready to open its doors.", did:"Teaser video to build anticipation before the grand opening.", roles:BR_ROLES, stats:evStatsTA, video:"videos/house-of-le-mans.mp4", orient:"landscape"}
+   ]}
+];
+const REVIEWS=[["Yessiel Trivena","Musician · one-time Instagram account review"]];
+const ADS=[["Cimol Bojot AA","Snack brand"],["Tania Parfum","Fragrance"],["Usual Parfume","Fragrance"],["TACO Flooring","Home interiors"]];
+/* ===== end of edit area ===== */
+// Alphabetical order (titles like "dr." are ignored when sorting)
+const sortKey=n=>n.replace(/^(dr|drg|ir|prof)\.?\s+/i,"").toLowerCase();
+CATEGORIES.forEach(c=>c.items.sort((a,b)=>sortKey(a.name).localeCompare(sortKey(b.name))));
+ADS.sort((a,b)=>sortKey(a[0]).localeCompare(sortKey(b[0])));
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const txt=s=>esc(s).replace(/\[fill[^\]]*\]/g,m=>`<span class="todo">${m}</span>`);
+const pad=n=>String(n).padStart(2,"0");
+// Unfilled placeholders never show on the live page; an item with little data simply looks shorter.
+const clean=s=>String(s||"").replace(/\s*\[fill[^\]]*\]/g,"").trim();
+
+let mode="All", list=[], active=0, step=28;
+
+function calcStep(){
+  const r=$("dial").offsetWidth/2||440;
+  const minGap=mode==="All"?240:220;           // px between labels along the arc
+  step=Math.max(24, minGap/r*180/Math.PI);
+}
+function setMode(m, startAt=0){
+  mode=m;
+  list = m==="All" ? [{reel:true,name:"Showreel"},...CATEGORIES.map(c=>({cat:true,...c,name:c.key}))] : CATEGORIES.find(c=>c.key===m).items.map(x=>({...x,catKey:m}));
+  active=startAt; calcStep(); renderChips(); renderArc(); show();
+}
+function renderChips(){
+  const all=["All",...CATEGORIES.map(c=>c.key)];
+  $("chips").innerHTML=all.map(c=>`<button class="chip" id="chip-${c.replace(/\W/g,'')}" aria-pressed="${c===mode}">${esc(c)}</button>`).join("");
+  [...$("chips").children].forEach((b,i)=>b.onclick=()=>setMode(all[i]));
+}
+function renderArc(){
+  $("arc").style.transition="none";
+  $("arc").innerHTML=list.map((p,i)=>`<div class="arc-item" style="transform:rotate(${i*step}deg)"><button data-i="${i}">${esc(p.short||p.name)}</button></div>`).join("");
+  $("arc").querySelectorAll("button").forEach(b=>b.onclick=()=>{const i=+b.dataset.i; if(i===active&&list[i].cat) setMode(list[i].key); else go(i);});
+  $("arc").offsetWidth; $("arc").style.transition="";
+}
+function go(i){ if(!list.length)return; active=(i+list.length)%list.length; show(); }
+
+function reelHTML(title,sub,item){
+  const ig=item&&item.ig?`<a class="ig-link" href="${esc(item.ig)}" target="_blank" rel="noopener">Watch on Instagram ↗</a>`:"";
+  if(item&&item.video) return `<video src="${esc(item.video)}" autoplay muted loop playsinline></video><button class="snd" id="snd" aria-pressed="false">Sound off</button>${ig}`;
+  return `<div class="ph"><div class="ph-top"><span class="rec">REC</span><span>${item&&item.orient==="landscape"?"16:9":"9:16"}</span></div>
+    <div class="ph-mid"><b>${esc(title)}</b>${esc(sub)}</div>
+    <div class="ph-bot"><span id="tc">00:00:00:00</span><span>${item&&item.orient==="landscape"?"1920×1080":"1080×1920"}</span></div></div>${ig}`;
+}
+// Frame follows the video: wide for horizontal clips, tall for vertical. Placeholders can set orient:"landscape".
+function applyOrient(item){
+  const reel=$("reel"), stage=$("stage");
+  const set=(l,ar)=>{reel.classList.toggle("land",l);stage.classList.toggle("land",l);reel.style.aspectRatio=ar||"";};
+  set(!!item&&item.orient==="landscape");
+  const v=reel.querySelector("video"), sb=reel.querySelector(".snd");
+  if(v&&sb) sb.onclick=()=>{v.muted=!v.muted; sb.textContent=v.muted?"Sound off":"Sound on"; sb.setAttribute("aria-pressed",String(!v.muted)); if(!v.muted) v.play().catch(()=>{});};
+  if(v){const chk=()=>{if(!reel.contains(v))return;const w=v.videoWidth,h=v.videoHeight;set(w>=h,w&&h?`${w}/${h}`:"")}; v.readyState>=1?chk():v.addEventListener("loadedmetadata",chk,{once:true});}
+}
+// Showreel: short clips that cross-fade, a few seconds each. Two video elements: one plays while the next loads.
+const ALLVIDS=(()=>{const qs=CATEGORIES.map(c=>c.items.filter(x=>x.video).map(x=>({...x,catKey:c.key})));const o=[];while(qs.some(q=>q.length))qs.forEach(q=>{if(q.length)o.push(q.shift())});return o;})();
+let mToken=0;
+function stopMontage(){mToken++;}
+function runMontage(box,items,onChange,delay,token){
+  box.insertAdjacentHTML("afterbegin",'<video class="mv" muted playsinline></video><video class="mv" muted playsinline></video>');
+  const vs=[...box.querySelectorAll("video.mv")], n=items.length, hold=4200;
+  if(n===1) vs[0].loop=true;
+  const prep=(v,it)=>new Promise(res=>{let ok=false;const fin=()=>{if(!ok){ok=true;res();}};
+    v.onloadedmetadata=()=>{const d=v.duration||0,t=d>8?Math.min(d*.3,d-5):0;if(t>0){v.onseeked=fin;v.currentTime=t;}else fin();};
+    v.onerror=fin; setTimeout(fin,5000); v.src=it.video;});
+  let i=0,f=0,first=true;
+  const swap=()=>{
+    if(token!==mToken)return;
+    const v=vs[f],o=vs[1-f];
+    v.play().catch(()=>{}); v.classList.add("on"); o.classList.remove("on"); o.pause();
+    onChange(items[i%n]);
+    if(n<2)return;
+    const wait=hold+(first?delay:0); first=false;
+    Promise.all([prep(o,items[(i+1)%n]),new Promise(r=>setTimeout(r,wait))]).then(()=>{if(token!==mToken)return;i++;f=1-f;swap();});
+  };
+  prep(vs[0],items[0]).then(swap);
+}
+function startMontage(items,onChange){
+  const token=++mToken, reel=$("reel");
+  reel.classList.remove("land"); $("stage").classList.remove("land"); reel.style.aspectRatio=""; reel.innerHTML="";
+  runMontage(reel,items,onChange,0,token);
+}
+// Showreel collage: 2 vertical + 2 horizontal tiles on desktop (1 + 2 on phones), each cycling its own clips, staggered.
+function startShowreel(){
+  const token=++mToken, phone=matchMedia("(max-width:900px)").matches;
+  const vp=ALLVIDS.filter(x=>x.orient!=="landscape"), hp=ALLVIDS.filter(x=>x.orient==="landscape");
+  const split=(pool,k)=>Array.from({length:k},(_,j)=>{const s=pool.filter((_,i)=>i%k===j);return s.length?s:(pool.length?[pool[j%pool.length]]:[]);});
+  const V=split(vp,phone?1:2), H=split(hp,2);
+  const tile=c=>`<div class="tile ${c}"><span class="ttag" aria-hidden="true"></span></div>`;
+  const hs=`<div class="hstack">${tile("h")}${tile("h")}</div>`;
+  $("collage").innerHTML=phone?tile("v")+hs:tile("v")+hs+tile("v");
+  const lists=phone?[V[0],H[0],H[1]]:[V[0],H[0],H[1],V[1]];
+  [...$("collage").querySelectorAll(".tile")].forEach((t,k)=>{const L=lists[k]; if(L&&L.length) runMontage(t,L,it=>{t.querySelector(".ttag").textContent=it.name;},k*900,token);});
+}
+function show(){
+  const rot=-active*step;
+  $("arc").style.transform=`rotate(${rot}deg)`;
+  $("arc").querySelectorAll(".arc-item").forEach((el,i)=>{
+    const a=Math.abs(i*step+rot), lim=step*1.2;   // only the active name and its direct neighbours show
+    el.classList.toggle("on",i===active);
+    el.classList.toggle("dim",i!==active&&a<=lim);
+    el.classList.toggle("gone",a>lim);
+  });
+  const p=list[active];
+  stopMontage(); $("collage").innerHTML="";
+  const isReel=!!p.reel;
+  ["caseLeft","reel","caseRight"].forEach(id=>$(id).hidden=isReel); $("showreel").hidden=!isReel;
+  if(isReel){
+    startShowreel();
+    $("counter").innerHTML=`<b>${pad(active+1)}</b> / ${pad(list.length)} · Showreel · use the arrows to open a category`;
+    return;
+  }
+  if(p.cat){
+    const pool=p.items.filter(x=>x.video).map(x=>({...x,catKey:p.key}));
+    $("reel").style.setProperty("--tint",p.tint);
+    {
+      $("caseLeft").innerHTML=`<span class="label">Category · ${pad(p.items.length)} clients</span>
+        <h2>${esc(p.key)}</h2><p>${esc(p.blurb)}</p>`;
+      $("caseRight").innerHTML=`<span class="label">Clients</span>
+        <ul class="mini">${p.items.map(x=>`<li data-n="${esc(x.name)}">${esc(x.name)}</li>`).join("")}</ul>
+        <button class="open-btn" id="openCat">See the work →</button>`;
+      $("openCat").onclick=()=>setMode(p.key);
+    }
+    if(pool.length){
+      startMontage(pool,it=>document.querySelectorAll("#caseRight .mini li").forEach(li=>li.classList.toggle("cur",li.dataset.n===it.name)));
+    }else{ $("reel").innerHTML=reelHTML(p.name,"Video coming soon",null); applyOrient(null); }
+    $("counter").innerHTML=`<b>${pad(active+1)}</b> / ${pad(list.length)} · tap a category to open`;
+  }else{
+    const c=CATEGORIES.find(c=>c.key===p.catKey);
+    $("reel").style.setProperty("--tint",c.tint);
+    $("reel").innerHTML=reelHTML(p.name,"Video coming soon",p);
+    applyOrient(p);
+    const ctx=clean(p.context), did=clean(p.did), sts=(p.stats||[]).filter(([v])=>clean(v));
+    $("caseLeft").innerHTML=`<span class="label">${esc(p.type)}${p.ongoing?' · <span class="live">Ongoing</span>':''}</span>
+      <h2>${esc(p.name)}</h2>${ctx?`<p>${esc(ctx)}</p>`:""}
+      <div class="roles">${p.roles.map(r=>`<span>${esc(r)}</span>`).join("")}</div>`;
+    $("caseRight").innerHTML=`${did?`<span class="label">What I did</span><p>${esc(did)}</p>`:""}
+      ${p.confidential?`<span class="label">Results</span><p>Findings are confidential. The full analysis was delivered privately to the client.</p>`:(sts.length?`<span class="label">Numbers</span>
+      <div class="stats">${sts.map(([v,l])=>`<div><b>${esc(clean(v))}</b><small>${esc(p.ongoing&&l==="months"?"months and counting":l)}</small></div>`).join("")}</div>`:"")}`;
+    $("counter").innerHTML=`<b>${pad(active+1)}</b> / ${pad(list.length)} · ${esc(p.catKey)} · tap a name or swipe`;
+  }
+}
+function renderWall(){
+  const grp=(k,rows)=>`<span class="label"><span>${esc(k)}</span><span>${pad(rows.length)}</span></span>
+    <ul>${rows.map(([n,t,o])=>`<li>${esc(n)}<small>${esc(t)}${o?' · <span class="live">Ongoing</span>':''}</small></li>`).join("")}</ul>`;
+  $("clientWall").innerHTML=CATEGORIES.map(c=>`<div class="cgroup">${grp(c.key,c.items.map(x=>[x.name,x.type,x.ongoing]))}</div>`).join("")
+    +`<div class="cgroup">${grp("Instagram Ads",ADS)}<div class="cgap"></div>${grp("Account review",REVIEWS)}</div>`;
+}
+
+$("prev").onclick=()=>go(active-1);
+$("next").onclick=()=>go(active+1);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")go(active-1);if(e.key==="ArrowRight")go(active+1);});
+let sx=null;
+$("dialZone").addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
+$("dialZone").addEventListener("touchend",e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(active+(dx<0?1:-1));sx=null;});
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{const s=step;calcStep();if(Math.abs(s-step)>.5){renderArc();show();}},150)});
+let f=0;setInterval(()=>{const tc=document.getElementById("tc");if(!tc)return;f++;const fr=f%30,s=Math.floor(f/30)%60,m=Math.floor(f/1800)%60;tc.textContent=`00:${pad(m)}:${pad(s)}:${pad(fr)}`},1000/30);
+document.querySelectorAll("button.copy").forEach(b=>b.onclick=async()=>{
+  const el=b.dataset.copy?document.getElementById(b.dataset.copy):null;
+  const t=b.dataset.text||el.textContent;
+  try{await navigator.clipboard.writeText(t);b.textContent="Copied";}
+  catch(e){if(el){const r=document.createRange();r.selectNodeContents(el);getSelection().removeAllRanges();getSelection().addRange(r);}b.textContent="Press Ctrl+C";}
+  setTimeout(()=>b.textContent="Copy",1800);
+});
+renderWall();setMode("All");
+</script>
+</body></html>
